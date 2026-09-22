@@ -45,12 +45,3 @@ CREATE TABLE administrators (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-INSERT INTO offices (name, office_type, region_code, region_name, address, telephone, fax, email, sort_order)
-VALUES ('TESDA National Capital Region (NCR)', 'Regional Office', 'NCR', 'National Capital Region', '3F RTC Building, Gate 2 TESDA Complex, East Service Rd., South Superhighway, Taguig, Metro Manila', '8811-3499', NULL, 'NCR@tesda.gov.ph', 10);
-
-SET @ncr_office_id = LAST_INSERT_ID();
-INSERT INTO officials (office_id, name, position, is_primary)
-VALUES (@ncr_office_id, 'ANGELINA M. CARREON', 'Regional Director', 1);
-
--- Replace this password hash during installation using scripts/create-admin.php.
-

@@ -11,7 +11,7 @@ A responsive officials directory built with Native PHP, MySQL, and Tailwind CSS.
 ## Installation
 
 1. Copy `.env.example` to `.env` and update the database credentials. Leave `APP_URL` blank to use the current project URL automatically, or set it to a fixed URL.
-2. Import `database/schema.sql` into MySQL.
+2. Import `database/schema.sql` into MySQL, then import `database/directory-data.sql` to load the current directory records.
 3. Create the first administrator:
 
    `php scripts/create-admin.php admin@tesda.gov.ph "a-strong-password" "Directory Administrator"`
@@ -32,11 +32,9 @@ The local database was populated from TESDA's public [Central Office](https://ww
 
 Technology institute regions are assigned from their listed locations using `php scripts/assign-tti-regions.php --apply`. This mapping covers all 186 imported institutions and uses the current Negros Island Region and Isabela City classifications. The TESDA directory has no address for the Provincial/City Manpower Development Center; its BARMM assignment follows TESDA's published training center address in Marawi City.
 
-## Included sample data
+## Included directory data
 
-- TESDA National Capital Region (NCR)
-- ANGELINA M. CARREON — Regional Director
-- Address, telephone number, and email from the supplied sample
+`database/directory-data.sql` contains a snapshot of 353 offices and 356 officials from the local database. It contains no administrator accounts. Import it into a fresh database after `database/schema.sql`, then create an administrator with the command above.
 
 ## Security notes
 
