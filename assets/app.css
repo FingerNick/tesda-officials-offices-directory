@@ -23,6 +23,24 @@ select.field:hover { border-color: #0038A8; background-color: #f8fafc; }
 select.field:focus { border-color: #0038A8; }
 select.field option { background-color: #fff; color: #0f172a; }
 .label { display:block; margin-bottom:.35rem; font-size:.875rem; font-weight:700; color:#334155; }
+dialog::backdrop { background: rgba(15, 23, 42, .65); }
+
+@keyframes modal-enter {
+  from { opacity: 0; transform: translateY(18px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes modal-exit {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(12px) scale(.98); }
+}
+@keyframes backdrop-enter {
+  from { background: rgba(15, 23, 42, 0); }
+  to { background: rgba(15, 23, 42, .65); }
+}
+@keyframes backdrop-exit {
+  from { background: rgba(15, 23, 42, .65); }
+  to { background: rgba(15, 23, 42, 0); }
+}
 
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(14px); }
@@ -30,6 +48,10 @@ select.field option { background-color: #fff; color: #0f172a; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  #add-office-dialog.is-opening { animation: modal-enter .28s ease-out both; }
+  #add-office-dialog.is-closing { animation: modal-exit .24s ease-in both; }
+  #add-office-dialog.is-opening::backdrop { animation: backdrop-enter .28s ease-out both; }
+  #add-office-dialog.is-closing::backdrop { animation: backdrop-exit .24s ease-in both; }
   .hero-intro { animation: rise-in .55s ease-out both; }
   .search-panel { animation: rise-in .55s .12s ease-out both; }
   .directory-card.scroll-reveal { opacity: 0; transition: opacity 1.1s ease, transform .22s ease, box-shadow .22s ease, border-color .22s ease; }

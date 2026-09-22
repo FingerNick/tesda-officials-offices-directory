@@ -25,30 +25,36 @@ $pageTitle = 'TESDA Officials Directory';
 require __DIR__ . '/partials/header.php';
 ?>
 <section class="bg-tesda-navy text-white">
-  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+  <div class="mx-auto max-w-7xl px-4 pb-0 pt-10 sm:px-6 lg:px-8 lg:pt-14">
     <div class="hero-intro max-w-3xl">
       <p class="mb-2 text-sm font-bold uppercase tracking-[.18em] text-blue-200">Unofficial Directory</p>
       <h1 class="text-3xl font-black tracking-tight sm:text-4xl">Find a TESDA office or official</h1>
       <p class="mt-3 max-w-2xl text-base leading-7 text-blue-100">Search contact details for the Central Office, Regional and Provincial Offices, and TESDA Technology Institutions nationwide.</p>
       <p class="mt-4 inline-flex rounded-full border border-blue-200/40 bg-white/10 px-3 py-1 text-sm font-semibold text-blue-100">Directory data as of September 2026</p>
     </div>
-    <form class="search-panel mt-8 grid gap-3 rounded-2xl bg-white p-3 shadow-xl sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_210px_minmax(220px,280px)_auto]" method="get">
-      <label class="sr-only" for="q">Search</label><input id="q" name="q" value="<?= e($q) ?>" class="field border-0 bg-slate-50" placeholder="Search office, official, position…">
-      <label class="sr-only" for="type">Office type</label><select id="type" name="type" class="field border-0 bg-slate-50" onchange="this.form.submit()"><option value="">All office types</option><?php foreach($allowedTypes as $item): ?><option value="<?= e($item) ?>" <?= $type===$item?'selected':'' ?>><?= e($item) ?></option><?php endforeach; ?></select>
+  </div>
+</section>
+<div class="sticky top-0 z-30 bg-tesda-navy px-4 py-3 shadow-lg sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-7xl">
+    <form id="directory-search" class="search-panel grid grid-cols-2 gap-2 rounded-2xl bg-white p-2 shadow-xl sm:gap-3 sm:p-3 lg:grid-cols-[minmax(0,1fr)_210px_minmax(220px,280px)_auto]" method="get" action="<?= url() ?>">
+      <label class="sr-only" for="q">Search</label><input id="q" name="q" value="<?= e($q) ?>" class="field col-span-2 border-0 bg-slate-50 lg:col-span-1" placeholder="Search office, official, position…">
+      <label class="sr-only" for="type">Office type</label><select id="type" name="type" class="field border-0 bg-slate-50"><option value="">All office types</option><?php foreach($allowedTypes as $item): ?><option value="<?= e($item) ?>" <?= $type===$item?'selected':'' ?>><?= e($item) ?></option><?php endforeach; ?></select>
       <?php if($type === 'Central Office'): ?>
         <label class="sr-only" for="office_id">Central office</label><select id="office_id" name="office_id" class="field border-0 bg-slate-50"><option value="">All central offices</option><?php foreach($centralOffices as $item): ?><option value="<?= (int)$item['id'] ?>" <?= $officeId===(int)$item['id']?'selected':'' ?>><?= e($item['name']) ?></option><?php endforeach; ?></select>
       <?php else: ?>
         <label class="sr-only" for="region">Region</label><select id="region" name="region" class="field border-0 bg-slate-50"><option value="">All regions</option><?php foreach($regions as $item): ?><option value="<?= e($item['region_code']) ?>" <?= $region===$item['region_code']?'selected':'' ?>><?= e($item['region_name']) ?></option><?php endforeach; ?></select>
       <?php endif; ?>
-      <button class="rounded-xl bg-tesda-red px-6 py-3 font-bold text-white hover:bg-red-700">Search</button>
+      <button class="col-span-2 rounded-xl bg-tesda-red px-6 py-3 font-bold text-white hover:bg-red-700 lg:col-span-1">Search</button>
     </form>
+    <p id="search-status" class="sr-only" role="status" aria-live="polite"></p>
   </div>
-</section>
+</div>
 <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
   <div class="mb-7 grid grid-cols-2 gap-3 lg:grid-cols-4">
     <?php foreach($allowedTypes as $item): ?><a href="?type=<?= urlencode($item) ?>" class="filter-tile rounded-xl border border-slate-200 bg-white p-4 hover:border-blue-300"><div class="text-2xl font-black text-tesda-blue"><?= (int)($counts[$item] ?? 0) ?></div><div class="mt-1 text-sm font-semibold text-slate-600"><?= e($item) ?><?= $item==='Central Office'?'':'s' ?></div></a><?php endforeach; ?>
   </div>
-  <div class="mb-5 flex flex-wrap items-end justify-between gap-3"><div><h2 class="text-2xl font-extrabold tracking-tight text-tesda-navy"><?= $q||$type||$region||$officeId?'Search results':'All offices' ?></h2><p class="mt-1 text-sm text-slate-500"><?= count($offices) ?> office<?= count($offices)===1?'':'s' ?> found</p></div><?php if($q||$type||$region||$officeId): ?><a href="<?= url() ?>" class="text-sm font-bold text-tesda-blue hover:underline">Clear filters</a><?php endif; ?></div>
+  <div id="directory-results">
+  <div class="mb-5 flex flex-wrap items-end justify-between gap-3"><div><h2 class="text-2xl font-extrabold tracking-tight text-tesda-navy"><?= $q||$type||$region||$officeId?'Search results':'All offices' ?></h2><p class="directory-result-count mt-1 text-sm text-slate-500"><?= count($offices) ?> office<?= count($offices)===1?'':'s' ?> found</p></div><?php if($q||$type||$region||$officeId): ?><a id="clear-filters" href="<?= url() ?>" class="text-sm font-bold text-tesda-blue hover:underline">Clear filters</a><?php endif; ?></div>
   <?php if(!$offices): ?><div class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center"><h3 class="font-bold text-slate-800">No matching offices found</h3><p class="mt-2 text-slate-500">Try a broader keyword or clear one of the filters.</p></div><?php else: ?>
   <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
     <?php foreach($offices as $office): ?>
@@ -61,6 +67,8 @@ require __DIR__ . '/partials/header.php';
       </article>
     <?php endforeach; ?>
   </div><?php endif; ?>
+  </div>
 </section>
 <script src="<?= url('assets/scroll-reveal.js') ?>" defer></script>
+<script src="<?= url('assets/directory-search.js') ?>" defer></script>
 <?php require __DIR__ . '/partials/footer.php'; ?>
